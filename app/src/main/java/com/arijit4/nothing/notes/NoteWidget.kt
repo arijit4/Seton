@@ -1,11 +1,9 @@
 package com.arijit4.nothing.notes
 
 import android.content.Context
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -36,16 +34,16 @@ class NoteWidget : GlanceAppWidget() {
         fun noteDao(): NoteDAO
     }
 
-    private val GRAY_COLOR = Color(27, 27, 29)
-
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val noteDao = EntryPoints.get(context, NoteWidgetEntryPoint::class.java).noteDao()
 
         provideContent {
-            val widgetNote by noteDao.getWidgetNote().collectAsState(initial = null)
-            val defaultNote by noteDao.getDefaultNote().collectAsState(initial = null)
+            GlanceTheme {
+                val widgetNote by noteDao.getWidgetNote().collectAsState(initial = null)
+                val defaultNote by noteDao.getDefaultNote().collectAsState(initial = null)
 
-            WidgetContent(widgetNote, defaultNote)
+                WidgetContent(widgetNote, defaultNote)
+            }
         }
     }
 
@@ -58,7 +56,7 @@ class NoteWidget : GlanceAppWidget() {
             modifier = modifier
                 .fillMaxSize()
                 .cornerRadius(16.dp)
-                .background(GRAY_COLOR)
+                .background(GlanceTheme.colors.surface)
                 .padding(16.dp),
         ) {
             if (note.title.trim().isNotEmpty()) {
