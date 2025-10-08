@@ -51,24 +51,9 @@ class MainActivity : ComponentActivity() {
                 Surface(Modifier.fillMaxSize()) {
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Home,
-                        enterTransition = {
-                            slideInHorizontally { it }
-                        },
-                        exitTransition = { slideOutHorizontally { -it } }
+                        startDestination = Screen.Home
                     ) {
-                        composable<Screen.Home>(
-                            enterTransition = {
-                                slideIntoContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
-                                )
-                            },
-                            exitTransition = {
-                                slideOutOfContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
-                                )
-                            }
-                        ) {
+                        composable<Screen.Home> {
                             HomeScreen(
                                 navController,
                                 noteDao = noteDao
@@ -77,17 +62,7 @@ class MainActivity : ComponentActivity() {
                         composable<Screen.AddNote>(
                             typeMap = mapOf(
                                 typeOf<Note?>() to NoteNavType
-                            ),
-                            enterTransition = {
-                                slideIntoContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
-                                )
-                            },
-                            exitTransition = {
-                                slideOutOfContainer(
-                                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
-                                )
-                            }
+                            )
                         ) {
                             val args = it.toRoute<Screen.AddNote>()
                             val curNote = args.note
@@ -117,12 +92,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable<Screen.Settings>(
-                            enterTransition = {
-                                slideInHorizontally { -it }
-                            },
-                            exitTransition = { slideOutHorizontally { it } }
-                        ) {
+                        composable<Screen.Settings> {
                             SettingScreen(noteDao, navController)
                         }
                     }
