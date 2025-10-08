@@ -21,6 +21,8 @@ _Seton_ is yet another note taking app focused on keeping notes pinned always in
 
 ## Getting Started
 
+A debug-build of the app can be downloaded from [here](https://github.com/arijit4/seton/releases/latest)
+
 To build and run the app, you'll need Android Studio and a device or emulator running Android 5.0 (Lollipop) or higher.
 
 1.  Clone the repository:
