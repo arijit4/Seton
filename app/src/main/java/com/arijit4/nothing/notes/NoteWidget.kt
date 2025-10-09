@@ -1,6 +1,7 @@
 package com.arijit4.nothing.notes
 
 import android.content.Context
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

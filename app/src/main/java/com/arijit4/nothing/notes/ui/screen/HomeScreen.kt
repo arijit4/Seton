@@ -151,16 +151,17 @@ fun HomeScreen(
                             )
                         }
                     }
-
-                    IconButton(
-                        onClick = {
-                            navController.navigate(Screen.Settings)
+                    AnimatedVisibility(selected.isEmpty()) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Screen.Settings)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = "Add"
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Add"
-                        )
                     }
                 },
                 navigationIcon = {
@@ -197,7 +198,6 @@ fun HomeScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             val notes by noteDao.getAllNotes().collectAsState(initial = emptyList())
-
 
             NotesGrid(
                 notes = notes.filter { it.id != -9999 },
@@ -320,7 +320,6 @@ fun NoteItem(
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
-
                 Text(
                     modifier = Modifier,
                     text = note.title,

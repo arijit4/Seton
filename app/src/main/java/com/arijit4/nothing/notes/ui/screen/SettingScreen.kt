@@ -41,6 +41,8 @@ import com.arijit4.nothing.notes.NoteWidget
 import com.arijit4.nothing.notes.Screen
 import com.arijit4.nothing.notes.db.Note
 import com.arijit4.nothing.notes.db.NoteDAO
+import com.arijit4.nothing.notes.util.DESCRIPTION_CHAR_LIMIT
+import com.arijit4.nothing.notes.util.TITLE_CHAR_LIMIT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -80,9 +82,6 @@ fun SettingScreen(
             )
         }
     ) { innerPadding ->
-        val TITLE_CHAR_LIMIT = 20
-        val DESCRIPTION_CHAR_LIMIT = 200
-
         val defaultNote by noteDao.getDefaultNote().collectAsState(initial = null)
 
         var title by remember { mutableStateOf("") }
