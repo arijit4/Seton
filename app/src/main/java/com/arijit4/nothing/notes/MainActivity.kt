@@ -1,13 +1,9 @@
 package com.arijit4.nothing.notes
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
@@ -23,6 +19,7 @@ import androidx.navigation.toRoute
 import com.arijit4.nothing.notes.db.Note
 import com.arijit4.nothing.notes.db.NoteDAO
 import com.arijit4.nothing.notes.ui.screen.AddNoteScreen
+import com.arijit4.nothing.notes.ui.screen.DefaultNoteScreen
 import com.arijit4.nothing.notes.ui.screen.HomeScreen
 import com.arijit4.nothing.notes.ui.screen.SettingScreen
 import com.arijit4.nothing.notes.ui.theme.NotesTheme
@@ -51,20 +48,20 @@ class MainActivity : ComponentActivity() {
                 Surface(Modifier.fillMaxSize()) {
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Home
+                        startDestination = HomeDestination
                     ) {
-                        composable<Screen.Home> {
+                        composable<HomeDestination> {
                             HomeScreen(
                                 navController,
                                 noteDao = noteDao
                             )
                         }
-                        composable<Screen.AddNote>(
+                        composable<AddNoteDestination>(
                             typeMap = mapOf(
                                 typeOf<Note?>() to NoteNavType
                             )
                         ) {
-                            val args = it.toRoute<Screen.AddNote>()
+                            val args = it.toRoute<AddNoteDestination>()
                             val curNote = args.note
                             AddNoteScreen(
                                 note = args.note,
@@ -92,8 +89,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable<Screen.Settings> {
+                        composable<SettingsDestination> {
                             SettingScreen(noteDao, navController)
+                        }
+                        composable<DefaultNoteDestination> {
+                            DefaultNoteScreen(noteDao = noteDao, navController = navController)
                         }
                     }
                 }

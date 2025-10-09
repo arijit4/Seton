@@ -1,50 +1,40 @@
 package com.arijit4.nothing.notes.ui.screen
 
-import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.glance.LocalContext
-import androidx.glance.appwidget.updateAll
 import androidx.navigation.NavHostController
-import com.arijit4.nothing.notes.NoteWidget
-import com.arijit4.nothing.notes.Screen
-import com.arijit4.nothing.notes.db.Note
+import com.arijit4.nothing.notes.BuildConfig
+import com.arijit4.nothing.notes.DefaultNoteDestination
+import com.arijit4.nothing.notes.HomeDestination
+import com.arijit4.nothing.notes.Destination
 import com.arijit4.nothing.notes.db.NoteDAO
-import com.arijit4.nothing.notes.util.DESCRIPTION_CHAR_LIMIT
-import com.arijit4.nothing.notes.util.TITLE_CHAR_LIMIT
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.arijit4.nothing.notes.ui.screen.shared.components.CustomTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,125 +42,123 @@ fun SettingScreen(
     noteDao: NoteDAO,
     navController: NavHostController
 ) {
-    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Settings") },
-                colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(
-                        containerColor = Color.Transparent
-                    ),
-                actions = {
-
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "Add"
-                        )
-                    }
-                }
-            )
+            CustomTopBar(title = "Settings", navController = navController)
         }
     ) { innerPadding ->
-        val defaultNote by noteDao.getDefaultNote().collectAsState(initial = null)
+        val items = listOf(
+            SettingObj(
+                title = "Default note",
+                description = "Choose what to show when no note is pinned.",
+                icon = Icons.Default.Add,
+                destination = DefaultNoteDestination
+            ),
+            SettingObj(
+                title = "About",
+                description = "App version: ${BuildConfig.VERSION_NAME}",
+                icon = Icons.Outlined.Info,
+                destination = null
+            )
+        )
 
-        var title by remember { mutableStateOf("") }
-        var description by remember { mutableStateOf("") }
-
-        if (defaultNote != null) {
-            title = defaultNote!!.title
-            description = defaultNote!!.description
-        }
-        Column(
+        SettingCard(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-        ) {
+                .padding(horizontal = 16.dp),
+            settingObj = items,
+            navController = navController
+        )
+    }
+}
+
+@Composable
+fun SettingCard(
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    settingObj: List<SettingObj>,
+    navController: NavHostController
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp)),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        if (label != null) {
             Text(
-                text = "Default note",
+                text = label,
                 color = Color(0xffC6102E),
                 style = MaterialTheme.typography.labelLarge
             )
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            ) {
-                TextField(
-                    value = title,
-                    onValueChange = { if (it.length <= TITLE_CHAR_LIMIT) title = it },
-                    placeholder = { Text("Title", style = MaterialTheme.typography.headlineSmall) },
-                    textStyle = MaterialTheme.typography.headlineSmall,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    supportingText = {
-                        Text(
-                            text = "${title.length} / $TITLE_CHAR_LIMIT",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End,
-                        )
-                    },
-                    singleLine = true
-                )
-                TextField(
-                    value = description,
-                    onValueChange = { if (it.length <= DESCRIPTION_CHAR_LIMIT) description = it },
-                    placeholder = { Text("Description") },
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    supportingText = {
-                        Text(
-                            text = "${description.length} / $DESCRIPTION_CHAR_LIMIT",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.End,
-                        )
+        }
+        settingObj.forEach { setting ->
+            SettingItem(
+                setting = setting,
+                onClick = {
+                    if (setting.destination != null) {
+                        navController.navigate(setting.destination)
                     }
-                )
-                Button(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(8.dp),
-                    onClick = {
-                        coroutineScope.launch {
-                            noteDao.updateNote(
-                                defaultNote!!.copy(
-                                    title = title,
-                                    description = description
-                                )
-                            )
-                            NoteWidget().updateAll(navController.context)
-                        }
-                        navController.popBackStack()
-                    }
-                ) {
-                    Text("Update")
                 }
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingItem(
+    modifier: Modifier = Modifier,
+    setting: SettingObj,
+    onClick: () -> Unit
+) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = setting.destination != null,
+                onClick = { onClick() }
+            ),
+        shape = RectangleShape
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = setting.title
+                )
+                Text(
+                    text = setting.description,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.56f)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    imageVector = setting.icon,
+                    contentDescription = "Add",
+                    modifier = Modifier
+                )
             }
         }
     }
 }
 
+data class SettingObj(
+    val title: String,
+    val description: String,
+    val icon: ImageVector,
+    val destination: Destination?
+)

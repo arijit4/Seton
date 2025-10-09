@@ -59,8 +59,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.appwidget.updateAll
 import androidx.navigation.NavHostController
+import com.arijit4.nothing.notes.AddNoteDestination
 import com.arijit4.nothing.notes.NoteWidget
-import com.arijit4.nothing.notes.Screen
+import com.arijit4.nothing.notes.Destination
+import com.arijit4.nothing.notes.SettingsDestination
 import com.arijit4.nothing.notes.db.Note
 import com.arijit4.nothing.notes.db.NoteDAO
 import com.arijit4.nothing.notes.ui.theme.NothingRed
@@ -154,7 +156,7 @@ fun HomeScreen(
                     AnimatedVisibility(selected.isEmpty()) {
                         IconButton(
                             onClick = {
-                                navController.navigate(Screen.Settings)
+                                navController.navigate(SettingsDestination)
                             }
                         ) {
                             Icon(
@@ -184,7 +186,7 @@ fun HomeScreen(
             FloatingActionButton(
                 containerColor = NothingRed,
                 onClick = {
-                    navController.navigate(Screen.AddNote())
+                    navController.navigate(AddNoteDestination())
                 }
             ) {
                 Icon(
@@ -204,7 +206,7 @@ fun HomeScreen(
                 selectedNotes = selected,
                 deleteConfirmed = deleteClicked,
                 onNoteClicked = { note ->
-                    navController.navigate(Screen.AddNote(note = note))
+                    navController.navigate(AddNoteDestination(note = note))
                 },
                 onNoteLongClicked = { note ->
                     selected = if (selected.contains(note))
