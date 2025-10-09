@@ -76,6 +76,9 @@ fun HomeScreen(
     navController: NavHostController,
     noteDao: NoteDAO
 ) {
+    val notes by noteDao.getAllNotes().collectAsState(initial = emptyList())
+    val hasPinnedNoteAlready = notes.any { it.showInWidget }
+
     var selected by remember { mutableStateOf(listOf<Note>()) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -115,7 +118,10 @@ fun HomeScreen(
                         containerColor = Color.Transparent
                     ),
                 actions = {
-                    AnimatedVisibility(selected.size == 1) {
+                    AnimatedVisibility(
+                        selected.size == 1 &&
+                                (!hasPinnedNoteAlready || selected[0].showInWidget)
+                    ) {
                         val pinned = selected.firstOrNull()?.showInWidget
                         if (pinned != null) {
                             IconButton(
@@ -136,7 +142,7 @@ fun HomeScreen(
                                         if (pinned) BookmarkRemove
                                         else BookmarkAdd
                                     },
-                                    contentDescription = "Add"
+                                    contentDescription = "Pin"
                                 )
                             }
                         }
@@ -161,7 +167,7 @@ fun HomeScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Settings,
-                                contentDescription = "Add"
+                                contentDescription = "Settings"
                             )
                         }
                     }
@@ -199,8 +205,6 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            val notes by noteDao.getAllNotes().collectAsState(initial = emptyList())
-
             NotesGrid(
                 notes = notes.filter { it.id != -9999 },
                 selectedNotes = selected,
