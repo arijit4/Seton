@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
                             val curNote = args.note
                             AddNoteScreen(
                                 note = args.note,
+                                navController = navController,
                                 onNoteAdded = { note ->
                                     coroutineScope.launch {
                                         if (curNote != null) {
@@ -82,9 +83,6 @@ class MainActivity : ComponentActivity() {
                                             noteDao.insertNote(note)
                                         }
                                     }
-                                    navController.popBackStack()
-                                },
-                                onNavigateBack = {
                                     navController.popBackStack()
                                 }
                             )
