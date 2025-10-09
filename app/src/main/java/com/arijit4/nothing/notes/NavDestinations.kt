@@ -17,6 +17,9 @@ data object SettingsDestination : Destination
 data object DefaultNoteDestination : Destination
 
 @Serializable
+data object ShapeAndThemeDestination : Destination
+
+@Serializable
 data class AddNoteDestination(
     val note: Note? = null
 ) : Destination

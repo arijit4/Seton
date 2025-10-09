@@ -9,7 +9,10 @@ import androidx.compose.ui.Modifier
 @Composable
 fun CustomScaffold(
     modifier: Modifier = Modifier,
-    topBar: @Composable () -> Unit = {},
+    title: String? = null,
+    topBar: @Composable () -> Unit = {
+        if (title != null) CustomTopBar(title = title)
+    },
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {

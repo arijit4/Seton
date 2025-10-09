@@ -22,6 +22,7 @@ import com.arijit4.nothing.notes.ui.screen.AddNoteScreen
 import com.arijit4.nothing.notes.ui.screen.DefaultNoteScreen
 import com.arijit4.nothing.notes.ui.screen.HomeScreen
 import com.arijit4.nothing.notes.ui.screen.SettingScreen
+import com.arijit4.nothing.notes.ui.screen.WidgetShapeThemeScreen
 import com.arijit4.nothing.notes.ui.theme.NotesTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -88,10 +89,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable<SettingsDestination> {
-                            SettingScreen(noteDao, navController)
+                            SettingScreen(navController)
                         }
                         composable<DefaultNoteDestination> {
                             DefaultNoteScreen(noteDao = noteDao, navController = navController)
+                        }
+                        composable<ShapeAndThemeDestination> {
+                            WidgetShapeThemeScreen(navController = navController)
                         }
                     }
                 }

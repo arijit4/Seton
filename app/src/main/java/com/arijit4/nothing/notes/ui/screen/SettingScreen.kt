@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,52 +24,64 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.arijit4.nothing.notes.BuildConfig
 import com.arijit4.nothing.notes.DefaultNoteDestination
-import com.arijit4.nothing.notes.HomeDestination
 import com.arijit4.nothing.notes.Destination
-import com.arijit4.nothing.notes.db.NoteDAO
+import com.arijit4.nothing.notes.ShapeAndThemeDestination
 import com.arijit4.nothing.notes.ui.screen.shared.components.CustomTopBar
+import com.arijit4.nothing.notes.ui.screen.shared.components.LabelText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
-    noteDao: NoteDAO,
     navController: NavHostController
 ) {
-
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             CustomTopBar(title = "Settings", navController = navController)
         }
     ) { innerPadding ->
         val items = listOf(
-            SettingObj(
-                title = "Default note",
-                description = "Choose what to show when no note is pinned.",
-                icon = Icons.Default.Add,
-                destination = DefaultNoteDestination
+            SettingGroup(
+                label = "Widget behaviour",
+                items = listOf(
+                    SettingObj(
+                        title = "Default note",
+                        description = "Choose what to show when no note is pinned.",
+                        icon = Icons.Default.CropSquare,
+                        destination = DefaultNoteDestination
+                    ),
+                    SettingObj(
+                        title = "Widget shape & theme",
+                        description = "Choose how your widget will look like.",
+                        icon = Icons.Filled.Category,
+                        destination = ShapeAndThemeDestination
+                    ),
+                )
             ),
-            SettingObj(
-                title = "About",
-                description = "App version: ${BuildConfig.VERSION_NAME}",
-                icon = Icons.Outlined.Info,
-                destination = null
+            SettingGroup(
+                label = "Info",
+                items = listOf(
+                    SettingObj(
+                        title = "About",
+                        description = "App version: ${BuildConfig.VERSION_NAME}",
+                        icon = Icons.Outlined.Info,
+                        destination = null
+                    )
+                )
             )
         )
 
-        SettingCard(
+        SettingContainer(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
-            settingObj = items,
+            items = items,
             navController = navController
         )
     }
@@ -82,27 +94,46 @@ fun SettingCard(
     settingObj: List<SettingObj>,
     navController: NavHostController
 ) {
+    Column(Modifier.fillMaxWidth()) {
+        if (label != null) LabelText(text = label)
+
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp)),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            settingObj.forEach { setting ->
+                SettingItem(
+                    setting = setting,
+                    onClick = {
+                        if (setting.destination != null) {
+                            navController.navigate(setting.destination)
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SettingContainer(
+    modifier: Modifier = Modifier,
+    items: List<SettingGroup>,
+    navController: NavHostController
+) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        if (label != null) {
-            Text(
-                text = label,
-                color = Color(0xffC6102E),
-                style = MaterialTheme.typography.labelLarge
-            )
-        }
-        settingObj.forEach { setting ->
-            SettingItem(
-                setting = setting,
-                onClick = {
-                    if (setting.destination != null) {
-                        navController.navigate(setting.destination)
-                    }
-                }
+        items.forEach { setting ->
+            SettingCard(
+                modifier = Modifier.fillMaxWidth(),
+                label = setting.label,
+                settingObj = setting.items,
+                navController = navController
             )
         }
     }
@@ -161,4 +192,9 @@ data class SettingObj(
     val description: String,
     val icon: ImageVector,
     val destination: Destination?
+)
+
+data class SettingGroup(
+    val label: String,
+    val items: List<SettingObj>
 )
