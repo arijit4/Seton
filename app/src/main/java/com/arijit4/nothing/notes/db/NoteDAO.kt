@@ -47,7 +47,7 @@ interface NoteDAO {
         setNoteForWidget(noteId)
     }
 
-    @Query("UPDATE notes SET showInWidget = 0")
+    @Query("UPDATE notes SET showInWidget = 0 where showInWidget = 1")
     suspend fun clearAllWidgetNotes()
 
     @Query("UPDATE notes SET showInWidget = 1 WHERE id = :noteId")

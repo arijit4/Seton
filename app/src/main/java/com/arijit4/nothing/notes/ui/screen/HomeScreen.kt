@@ -118,19 +118,15 @@ fun HomeScreen(
                         containerColor = Color.Transparent
                     ),
                 actions = {
-                    AnimatedVisibility(
-                        selected.size == 1 &&
-                                (!hasPinnedNoteAlready || selected[0].showInWidget)
-                    ) {
+                    AnimatedVisibility(selected.size == 1) {
                         val pinned = selected.firstOrNull()?.showInWidget
                         if (pinned != null) {
                             IconButton(
                                 onClick = {
                                     coroutineScope.launch {
-                                        noteDao.updateNote(
-                                            selected[0].copy(
-                                                showInWidget = !pinned
-                                            )
+                                        if (!pinned) noteDao.setWidgetNote(selected.first().id)
+                                        else noteDao.updateNote(
+                                            selected.first().copy(showInWidget = false)
                                         )
                                         selected = emptyList()
                                         NoteWidget().updateAll(navController.context)
@@ -206,7 +202,7 @@ fun HomeScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             NotesGrid(
-                notes = notes.filter { it.id != -9999 },
+                notes = notes.filter { it.id != defaultNote.id },
                 selectedNotes = selected,
                 deleteConfirmed = deleteClicked,
                 onNoteClicked = { note ->

@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -32,7 +31,7 @@ fun WidgetShapeThemeScreen(
     navController: NavHostController,
 ) {
     val availableShapes = listOf(
-        WidgetShape("Rectangle", RectangleShape),
+//        WidgetShape("Rectangle", RectangleShape),
         WidgetShape("Rounded Rectangle", RoundedCornerShape(12.dp)),
         WidgetShape("Circle", CircleShape)
     )
@@ -40,12 +39,14 @@ fun WidgetShapeThemeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 12.dp)
                 .padding(innerPadding),
         ) {
             item {
                 LabelText(text = "Widget shapes")
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceAround
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(availableShapes) { widgetShape ->
@@ -63,7 +64,7 @@ fun WidgetShapeThemeScreen(
                                     modifier = Modifier
                                         .size(90.dp)
                                         .background(
-                                            color = MaterialTheme.colorScheme.primary,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = widgetShape.shape
                                         )
                                 )
