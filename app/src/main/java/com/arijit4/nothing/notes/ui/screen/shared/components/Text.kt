@@ -14,7 +14,7 @@ fun LabelText(
     text: String
 ) {
     Text(
-        modifier = Modifier.padding(bottom = 4.dp),
+        modifier = modifier.padding(bottom = 4.dp),
         text = text,
         color = Color(0xffC6102E),
         style = MaterialTheme.typography.labelLarge

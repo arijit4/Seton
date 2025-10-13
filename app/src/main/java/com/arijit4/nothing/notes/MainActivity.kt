@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
                             DefaultNoteScreen(noteDao = noteDao, navController = navController)
                         }
                         composable<ShapeAndThemeDestination> {
-                            WidgetShapeThemeScreen(navController = navController)
+                            WidgetShapeThemeScreen(noteDao = noteDao, navController = navController)
                         }
                     }
                 }
