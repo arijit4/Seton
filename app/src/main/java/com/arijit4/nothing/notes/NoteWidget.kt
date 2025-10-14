@@ -2,6 +2,7 @@ package com.arijit4.nothing.notes
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -11,17 +12,25 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
 import androidx.glance.text.FontFamily
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.arijit4.nothing.notes.db.Note
 import com.arijit4.nothing.notes.db.NoteDAO
+import com.arijit4.nothing.notes.util.DataStoreKeys
+import com.arijit4.nothing.notes.util.WIDGET_SHAPES
+import com.arijit4.nothing.notes.util.read
+import com.arijit4.nothing.notes.util.readFlow
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -35,6 +44,8 @@ class NoteWidget : GlanceAppWidget() {
         fun noteDao(): NoteDAO
     }
 
+    override val sizeMode: SizeMode = SizeMode.Single
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val noteDao = EntryPoints.get(context, NoteWidgetEntryPoint::class.java).noteDao()
 
@@ -43,7 +54,10 @@ class NoteWidget : GlanceAppWidget() {
                 val widgetNote by noteDao.getWidgetNote().collectAsState(initial = null)
                 val defaultNote by noteDao.getDefaultNote().collectAsState(initial = null)
 
-                WidgetContent(widgetNote, defaultNote)
+                val shapeIndex by context.readFlow(DataStoreKeys.WIDGET_SHAPE.toString())
+                    .collectAsState(initial = 0)
+
+                WidgetContent(widgetNote, defaultNote, shapeIndex!!)
             }
         }
     }
@@ -56,8 +70,6 @@ class NoteWidget : GlanceAppWidget() {
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .cornerRadius(16.dp)
-                .background(GlanceTheme.colors.surface)
                 .padding(16.dp),
         ) {
             if (note.title.trim().isNotEmpty()) {
@@ -83,19 +95,35 @@ class NoteWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun WidgetContent(note: Note?, defaultNote: Note?) {
-        if (note == null) {
-            if (defaultNote != null)
-                WidgetContainer(defaultNote)
-            else
-                WidgetContainer(
-                    Note(
-                        title = "",
-                        description = "No notes"
-                    )
+    private fun WidgetContent(note: Note?, defaultNote: Note?, shapeIndex: Int) {
+        val height = 180
+        val circularPadding = ((height / 2 - height / (2 * 1.414f)).toInt()).dp
+
+        Box(
+            modifier = GlanceModifier
+                .size(height.dp, height.dp)
+                .background(GlanceTheme.colors.surface)
+                .cornerRadius(
+                    if (shapeIndex == 1) 1000.dp else 16.dp
                 )
-        } else {
-            WidgetContainer(note)
+                .padding(
+                    if (shapeIndex == 1) circularPadding else 0.dp
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (note == null) {
+                if (defaultNote != null)
+                    WidgetContainer(defaultNote)
+                else
+                    WidgetContainer(
+                        Note(
+                            title = "",
+                            description = "No notes"
+                        )
+                    )
+            } else {
+                WidgetContainer(note)
+            }
         }
     }
 }
