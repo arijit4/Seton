@@ -102,10 +102,10 @@ class NoteWidget : GlanceAppWidget() {
         Box(
             modifier = GlanceModifier
                 .size(height.dp, height.dp)
-                .background(GlanceTheme.colors.surface)
                 .cornerRadius(
                     if (shapeIndex == 1) 1000.dp else 16.dp
                 )
+                .background(GlanceTheme.colors.surface)
                 .padding(
                     if (shapeIndex == 1) circularPadding else 0.dp
                 ),
