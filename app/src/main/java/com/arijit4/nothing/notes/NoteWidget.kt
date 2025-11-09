@@ -96,7 +96,7 @@ class NoteWidget : GlanceAppWidget() {
 
     @Composable
     private fun WidgetContent(note: Note?, defaultNote: Note?, shapeIndex: Int) {
-        val height = 180
+        val height = 162
         val circularPadding = ((height / 2 - height / (2 * 1.414f)).toInt()).dp
 
         Box(
